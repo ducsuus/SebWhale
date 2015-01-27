@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+* { margin: 0; padding: 0;}
+
+body, html { height:100%; }
+
+#c {
+    position:absolute;
+    width:100%;
+    height:100%;
+}
+</style>
+<body style="border:0px; padding: 0px; margin: 0px">
+
+<canvas onmousemove="moveCursor(event)" id="c">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+</body>
+
+<script>
+
+
+// Layer defenitions
+
+//file:///Users/joe/Documents/redSquare.png
+
+var img = new Image();
+
+img.src = "http://ducsuus.com/seb/seb.png";
+
+var layerColors = ["#FF0000", "#00FF33", "#000099", "#660033", "#990066"];
+
+//var layerLocations = [[0,0], [10,10], [20,20], [30,30], [40,40]];
+//var layerLocations = [[0,0], [0,0], [0,0], [0,0], [0,0]];
+
+var layerLocations = [];
+
+for(var i = 0; i < 1000; i++){
+	layerLocations.push([0, 0]);
+}
+
+var r = 10;
+
+var speed = 10;
+
+var centerX = window.innerWidth / 2;
+var centerY = window.innerHeight / 2;
+
+var cursorX = 0;
+var cursorY = 0;
+
+var lCursorX = 0;
+var lCursorY = 0;
+
+var width = 100;
+var height = 100;
+
+document.addEventListener("keypress", keypress);
+
+var c = document.getElementById("c");
+
+c.width = window.innerWidth;
+c.height = window.innerHeight;
+
+var ctx = c.getContext("2d");
+ctx.fillStyle = "#FF0000";
+ctx.fillRect(0,0,10,1);
+
+function keypress(e){
+	console.log("keypress");
+}
+
+function moveCursor(e){
+
+	cursorX = e.clientX;
+	cursorY = e.clientY;
+
+}
+
+function changeCoord(index, x, y){
+	layerLocations[index][0] += x;
+	layerLocations[index][1] += y;
+}
+
+function update(){
+
+	ctx.clearRect ( 0 , 0 , c.width, c.height );
+
+	//ctx.drawImage(img,0,0, 100, 100);	
+
+	
+
+	// Run through loop backwards to make sure the "behind" levels really are behind
+	for(var i = layerLocations.length - 1; i >= 0; i--){
+		//ctx.fillStyle = layerColors[i];
+		//ctx.fillRect(layerLocations[i][0],layerLocations[i][1],10,10);
+		ctx.drawImage(img, layerLocations[i][0] - (width / 2), layerLocations[i][1] - (height / 2), width * (i / layerLocations.length), height * (i / layerLocations.length));
+
+	}
+
+	// Draw the cursor on top of everything else
+	ctx.fillRect(cursorX,cursorY,10,10);
+
+	//var differenceX = cursorX - lCursorX;
+	//var differenceY = cursorY - lCursorY;
+
+	var differenceX = Math.floor(cursorX - layerLocations[0][0]);
+	var differenceY = Math.floor(cursorY - layerLocations[0][1]);
+
+
+	/*if(differenceX > speed){
+		differenceX = speed;
+	} else if(differenceX < -speed){
+		differenceX = -speed;
+	} else{
+		differenceX = 0;
+	}
+
+	if(differenceY > speed){
+		differenceY = speed;
+	} else if(differenceY < -speed){
+		differenceY = -speed;
+	} else{
+		differenceY = 0;
+	}*/
+
+	differenceX /= 10;
+	differenceY /= 10;
+
+	if(differenceX != 0 || differenceY != 0){
+		for(var i = 0; i < layerLocations.length; i++){
+			setTimeout(changeCoord, i * 20, i, differenceX, differenceY);
+		}
+	}
+
+
+	lCursorX = cursorX;
+	lCursorY = cursorY;
+
+}
+
+setInterval(update, 33);
+
+</script>
+
+</html>
